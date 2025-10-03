@@ -1,0 +1,23 @@
+/* Custom CSS for your project */
+
+/* Optional: Custom scrollbar for better aesthetics */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    background-color: #2D3748; /* bg-gray-700 */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #4A5568; /* bg-gray-600 */
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #64748B; /* hover:bg-gray-500 */
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Add any other specific custom styles here if needed */

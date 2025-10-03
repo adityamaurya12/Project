@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbital Tracker - 3D Satellite Tracking System</title>
+    
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans antialiased overflow-hidden">
+
+    <div class="flex h-screen">
+
+        <div class="w-1/4 bg-gray-800 p-4 flex flex-col space-y-4 overflow-y-auto custom-scrollbar">
+            
+            <div class="bg-gray-700 p-4 rounded-lg shadow-md">
+                <h2 class="text-lg font-semibold mb-3">TLE Data Input</h2>
+                <div class="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center text-gray-400 mb-4 cursor-pointer hover:border-blue-500 hover:text-blue-400" id="drop-area">
+                    <input type="file" id="tleFileInput" multiple accept=".txt" class="hidden">
+                    <svg class="mx-auto h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p class="mt-1">Drag & drop TLE file or</p>
+                    <button class="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md" onclick="document.getElementById('tleFileInput').click()">Browse Files</button>
+                </div>
+            </div>
+
+            <div class="bg-gray-700 p-4 rounded-lg shadow-md flex-grow">
+                <h2 class="text-lg font-semibold mb-3">Tracked Satellites</h2>
+                <div id="trackedSatellitesList" class="space-y-2">
+                    <div class="bg-gray-600 p-2 rounded flex items-center justify-between cursor-pointer hover:bg-gray-500">
+                        <span>ISS (ZARYA)</span>
+                        <span class="text-xs text-blue-400">Active</span>
+                    </div>
+                    <div class="bg-gray-600 p-2 rounded flex items-center justify-between cursor-pointer hover:bg-gray-500">
+                        <span>STARLINK-1234</span>
+                        <span class="text-xs text-blue-400">Active</span>
+                    </div>
+                    <div class="bg-gray-600 p-2 rounded flex items-center justify-between cursor-pointer hover:bg-gray-500">
+                        <span>NOAA-18</span>
+                        <span class="text-xs text-blue-400">Active</span>
+                    </div>
+                     <div class="bg-gray-600 p-2 rounded flex items-center justify-between cursor-pointer hover:bg-gray-500">
+                        <span>HUBBLE</span>
+                        <span class="text-xs text-blue-400">Active</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="relative flex-grow">
+            <div id="cesiumContainer" class="w-full h-full"></div>
+            
+            <div class="absolute top-4 left-4 right-4 flex items-center justify-between z-10 p-3 bg-gray-800 bg-opacity-70 rounded-lg shadow-lg">
+                <div class="flex items-center space-x-2">
+                    <img src="https://www.flaticon.com/svg/static/icons/svg/2544/2544087.svg" alt="Logo" class="h-8 w-8 text-blue-400"> <h1 class="text-xl font-bold text-gray-50">Orbital Tracker</h1>
+                    <span class="text-sm text-gray-400 ml-2">3D Satellite Tracking System</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-gray-400">System Status:</span>
+                    <span class="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-full">OPERATIONAL</span>
+                </div>
+            </div>
+
+            <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between z-10 p-3 bg-gray-800 bg-opacity-70 rounded-lg shadow-lg">
+                <div class="flex items-center space-x-4 text-sm">
+                    <span>Time: <span id="currentTime">Thu, 02 Oct 2025 08:45:25 GMT</span></span>
+                    <span>Speed: <span id="currentSpeed">1x</span></span>
+                </div>
+                <div class="flex items-center space-x-4 text-sm">
+                    <span>Tracked Objects: <span id="trackedObjectsCount">4</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-1/4 bg-gray-800 p-4 flex flex-col space-y-4 overflow-y-auto custom-scrollbar">
+            
+            <div id="collisionWarningPanel" class="bg-red-800 p-4 rounded-lg shadow-md text-center" style="display: block;">
+                <div class="flex items-center justify-center mb-2">
+                    <svg class="h-8 w-8 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <h2 class="text-xl font-bold text-white">COLLISION WARNING: HIGH PRIORITY</h2>
+                </div>
+                <div class="text-left bg-red-700 p-3 rounded">
+                    <p class="text-sm mb-1"><strong class="text-orange-300">Pair:</strong> <span id="collisionPair">ISS vs STARLINK-1234</span></p>
+                    <p class="text-sm mb-1"><strong class="text-orange-300">TCA:</strong> <span id="collisionTCA">45 minutes</span></p>
+                    <p class="text-sm"><strong class="text-orange-300">Min Distance:</strong> <span id="collisionMinDistance">5.2 km</span></p>
+                </div>
+            </div>
+
+            <div class="bg-gray-700 p-4 rounded-lg shadow-md flex-grow">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-lg font-semibold">Satellite Details</h2>
+                    <span class="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full">Active</span>
+                </div>
+                <div id="satelliteDetailsContent" class="space-y-2 text-sm">
+                    <h3 class="font-bold text-gray-200">ISS (ZARYA)</h3>
+                    <p class="text-blue-400 font-medium">ORBITAL ELEMENTS</p>
+                    <p>Semi-Major Axis: <span class="float-right font-mono">6793.80 km</span></p>
+                    <p>Inclination: <span class="float-right font-mono">51.64°</span></p>
+                    <p>Eccentricity: <span class="float-right font-mono">0.000780</span></p>
+
+                    <p class="text-blue-400 font-medium mt-4">CURRENT POSITION</p>
+                    <p>Altitude: <span class="float-right font-mono">415.88 km</span></p>
+                    <p>Speed: <span class="float-right font-mono">7.66 km/s</span></p>
+                    <p>Latitude: <span class="float-right font-mono">28.5467°</span></p>
+                    <p>Longitude: <span class="float-right font-mono">-81.7472°</span></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Cesium.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
