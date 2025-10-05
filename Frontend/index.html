@@ -3,121 +3,324 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Orbital Tracker - 3D Satellite Tracking System</title>
-    
-    <link href="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link href="assets/css/style.css" rel="stylesheet">
+    <title>Orbital Tracker - Live Satellite Tracking</title>
+    <link rel="stylesheet" href="assets\css\style.css">
 </head>
-<body class="bg-gray-900 text-gray-100 font-sans antialiased overflow-hidden">
-
-    <div class="flex h-screen">
-
-        <div class="w-1/4 bg-gray-800 p-4 flex flex-col space-y-4 overflow-y-auto custom-scrollbar">
-            
-            <div class="bg-gray-700 p-4 rounded-lg shadow-md">
-                <h2 class="text-lg font-semibold mb-3">TLE Data Input</h2>
-                <div class="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center text-gray-400 mb-4 cursor-pointer hover:border-blue-500 hover:text-blue-400" id="drop-area">
-                    <input type="file" id="tleFileInput" multiple accept=".txt" class="hidden">
-                    <svg class="mx-auto h-12 w-12 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                    <p class="mt-1">Drag & drop TLE file or</p>
-                    <button class="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md" onclick="document.getElementById('tleFileInput').click()">Browse Files</button>
+<body>
+    <div class="app-container">
+        <nav class="navbar">
+            <div class="container nav-content">
+                <div class="logo-group">
+                    <div class="logo-icon">
+                        <svg class="icon-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-10v4h2v-4h-2zm0-3h2v2h-2v-2z" />
+                        </svg>
+                    </div>
+                    <span class="logo-text">Orbital Tracker</span>
+                </div>
+                <div class="nav-links">
+                    <button class="nav-link active">Home</button>
+                    <button class="nav-link">Live Tracker</button>
+                    <button class="nav-link">Satellites</button>
+                    <button class="nav-link">Predictions</button>
+                    <button class="nav-link">About</button>
+                </div>
+                <div class="nav-actions">
+                    <button class="btn-primary">Get Started</button>
+                    <button class="menu-toggle-btn">
+                        <svg class="icon-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
                 </div>
             </div>
-
-            <div class="bg-gray-700 p-4 rounded-lg shadow-md flex-grow">
-                <h2 class="text-lg font-semibold mb-3">Tracked Satellites</h2>
-                <div id="trackedSatellitesList" class="space-y-2">
-                    <div class="bg-gray-600 p-2 rounded flex items-center justify-between cursor-pointer hover:bg-gray-500">
-                        <span>ISS (ZARYA)</span>
-                        <span class="text-xs text-blue-400">Active</span>
-                    </div>
-                    <div class="bg-gray-600 p-2 rounded flex items-center justify-between cursor-pointer hover:bg-gray-500">
-                        <span>STARLINK-1234</span>
-                        <span class="text-xs text-blue-400">Active</span>
-                    </div>
-                    <div class="bg-gray-600 p-2 rounded flex items-center justify-between cursor-pointer hover:bg-gray-500">
-                        <span>NOAA-18</span>
-                        <span class="text-xs text-blue-400">Active</span>
-                    </div>
-                     <div class="bg-gray-600 p-2 rounded flex items-center justify-between cursor-pointer hover:bg-gray-500">
-                        <span>HUBBLE</span>
-                        <span class="text-xs text-blue-400">Active</span>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="relative flex-grow">
-            <div id="cesiumContainer" class="w-full h-full"></div>
-            
-            <div class="absolute top-4 left-4 right-4 flex items-center justify-between z-10 p-3 bg-gray-800 bg-opacity-70 rounded-lg shadow-lg">
-                <div class="flex items-center space-x-2">
-                    <img src="https://www.flaticon.com/svg/static/icons/svg/2544/2544087.svg" alt="Logo" class="h-8 w-8 text-blue-400"> <h1 class="text-xl font-bold text-gray-50">Orbital Tracker</h1>
-                    <span class="text-sm text-gray-400 ml-2">3D Satellite Tracking System</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <span class="text-sm text-gray-400">System Status:</span>
-                    <span class="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-full">OPERATIONAL</span>
-                </div>
-            </div>
-
-            <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between z-10 p-3 bg-gray-800 bg-opacity-70 rounded-lg shadow-lg">
-                <div class="flex items-center space-x-4 text-sm">
-                    <span>Time: <span id="currentTime">Thu, 02 Oct 2025 08:45:25 GMT</span></span>
-                    <span>Speed: <span id="currentSpeed">1x</span></span>
-                </div>
-                <div class="flex items-center space-x-4 text-sm">
-                    <span>Tracked Objects: <span id="trackedObjectsCount">4</span></span>
-                </div>
+        </nav>
+        
+        <div class="mobile-menu">
+            <div class="container mobile-menu-content">
+                <button class="mobile-nav-link">Home</button>
+                <button class="mobile-nav-link active">Live Tracker</button>
+                <button class="mobile-nav-link">Satellites</button>
+                <button class="mobile-nav-link">Predictions</button>
+                <button class="mobile-nav-link">About</button>
             </div>
         </div>
 
-        <div class="w-1/4 bg-gray-800 p-4 flex flex-col space-y-4 overflow-y-auto custom-scrollbar">
-            
-            <div id="collisionWarningPanel" class="bg-red-800 p-4 rounded-lg shadow-md text-center" style="display: block;">
-                <div class="flex items-center justify-center mb-2">
-                    <svg class="h-8 w-8 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    <h2 class="text-xl font-bold text-white">COLLISION WARNING: HIGH PRIORITY</h2>
-                </div>
-                <div class="text-left bg-red-700 p-3 rounded">
-                    <p class="text-sm mb-1"><strong class="text-orange-300">Pair:</strong> <span id="collisionPair">ISS vs STARLINK-1234</span></p>
-                    <p class="text-sm mb-1"><strong class="text-orange-300">TCA:</strong> <span id="collisionTCA">45 minutes</span></p>
-                    <p class="text-sm"><strong class="text-orange-300">Min Distance:</strong> <span id="collisionMinDistance">5.2 km</span></p>
+        <div class="page-content tracker-page">
+            <div class="container page-padding">
+                <div class="tracker-grid">
+                    <div class="sidebar left-sidebar">
+                        <div class="card card-tle">
+                            <h3 class="card-title">TLE Data Input</h3>
+                            <div class="tle-dropzone">
+                                <div class="dropzone-icon">
+                                    <svg class="icon-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                </div>
+                                <p class="dropzone-text">Drag & drop TLE file or</p>
+                                <button class="dropzone-link">Browse Files</button>
+                            </div>
+                        </div>
+                        <div class="card card-satellites">
+                            <h3 class="card-title">Tracked Satellites</h3>
+                            <div class="satellite-list">
+                                <div class="satellite-item">
+                                    <span class="satellite-name">ISS (ZARYA)</span>
+                                    <div class="status-indicator active"></div>
+                                </div>
+                                <div class="satellite-item">
+                                    <span class="satellite-name">STARLINK-4567</span>
+                                    <div class="status-indicator active"></div>
+                                </div>
+                                <div class="satellite-item">
+                                    <span class="satellite-name">SENTINEL-2A</span>
+                                    <div class="status-indicator active"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="three-d-view">
+                        <div class="view-container">
+                            <div class="view-content">
+                                <div class="earth-model">
+                                    <div class="earth-inner"></div>
+                                </div>
+                                <div class="orbit-path">
+                                    <div class="satellite-marker"></div>
+                                </div>
+                            </div>
+                            <div class="info-bar">
+                                <svg class="icon-blue-400 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span class="info-time">Thu, 02 Oct 2025 08:45:25 GMT</span>
+                                <span class="info-speed">Speed: 1&times;</span>
+                                <span class="info-count">Tracked Objects: 4</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar right-sidebar">
+                        <div class="card card-warning">
+                            <div class="warning-header">
+                                <svg class="icon-red-400 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.332 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <h3 class="warning-title">COLLISION WARNING</h3>
+                            </div>
+                            <div class="warning-details">
+                                <div class="detail-row">
+                                    <span class="detail-label">Pair:</span>
+                                    <span class="detail-value">ISS vs STARLINK-1234</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">TCA:</span>
+                                    <span class="detail-value warning-tca">45 minutes</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Min Distance:</span>
+                                    <span class="detail-value warning-distance">5.2 km</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-details">
+                            <div class="details-header">
+                                <h3 class="card-title">Satellite Details</h3>
+                                <span class="status-tag">Active</span>
+                            </div>
+                            <h4 class="satellite-name-large">ISS (ZARYA)</h4>
+                            
+                            <div class="details-section">
+                                <p class="section-title">ORBITAL ELEMENTS</p>
+                                <div class="detail-row">
+                                    <span class="detail-label">Semi-major Axis:</span>
+                                    <span class="detail-value">6793.00 km</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Inclination:</span>
+                                    <span class="detail-value">51.64&deg;</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Eccentricity:</span>
+                                    <span class="detail-value">0.000100</span>
+                                </div>
+                            </div>
+                            
+                            <div class="details-section">
+                                <p class="section-title">CURRENT POSITION</p>
+                                <div class="detail-row">
+                                    <span class="detail-label">Altitude:</span>
+                                    <span class="detail-value">415.00 km</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Speed:</span>
+                                    <span class="detail-value">7.66 km/s</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Latitude:</span>
+                                    <span class="detail-value">28.5467&deg;</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="bg-gray-700 p-4 rounded-lg shadow-md flex-grow">
-                <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-lg font-semibold">Satellite Details</h2>
-                    <span class="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full">Active</span>
-                </div>
-                <div id="satelliteDetailsContent" class="space-y-2 text-sm">
-                    <h3 class="font-bold text-gray-200">ISS (ZARYA)</h3>
-                    <p class="text-blue-400 font-medium">ORBITAL ELEMENTS</p>
-                    <p>Semi-Major Axis: <span class="float-right font-mono">6793.80 km</span></p>
-                    <p>Inclination: <span class="float-right font-mono">51.64°</span></p>
-                    <p>Eccentricity: <span class="float-right font-mono">0.000780</span></p>
-
-                    <p class="text-blue-400 font-medium mt-4">CURRENT POSITION</p>
-                    <p>Altitude: <span class="float-right font-mono">415.88 km</span></p>
-                    <p>Speed: <span class="float-right font-mono">7.66 km/s</span></p>
-                    <p>Latitude: <span class="float-right font-mono">28.5467°</span></p>
-                    <p>Longitude: <span class="float-right font-mono">-81.7472°</span></p>
-                </div>
-            </div>
-
         </div>
+
+        <div class="page-content satellites-page">
+            <div class="container page-padding">
+                <div class="page-header">
+                    <h1 class="page-title">Satellite Database</h1>
+                    <p class="page-subtitle">Browse and track satellites in Low Earth Orbit</p>
+                </div>
+                <div class="card card-filters">
+                    <div class="filter-group">
+                        <div class="search-input-wrapper">
+                            <svg class="icon-slate-400 search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input type="text" placeholder="Search satellites by name or NORAD ID..." class="search-input" />
+                        </div>
+                        <select class="filter-select">
+                            <option>All Types</option>
+                            <option>Communication</option>
+                            <option>Weather</option>
+                        </select>
+                        <select class="filter-select">
+                            <option>All Status</option>
+                            <option>Active</option>
+                            <option>Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="satellites-grid">
+                    <div class="satellite-card">
+                        <div class="card-header">
+                            <div class="satellite-info">
+                                <div class="satellite-icon-bg">
+                                    <svg class="icon-blue-400 satellite-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 10L3 7m0 0l3-3m-3 3h12a8 8 0 010 16H3m0-16v16" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="satellite-card-title">ISS (ZARYA)</h3>
+                                    <p class="satellite-type">Observatory</p>
+                                </div>
+                            </div>
+                            <div class="status-indicator active"></div>
+                        </div>
+                        <div class="card-details-group">
+                            <div class="detail-row-small">
+                                <span class="detail-label">Altitude</span>
+                                <span class="detail-value">415.00 km</span>
+                            </div>
+                            <div class="detail-row-small">
+                                <span class="detail-label">Speed</span>
+                                <span class="detail-value">7.66 km/s</span>
+                            </div>
+                            <div class="detail-row-small">
+                                <span class="detail-label">Status</span>
+                                <span class="status-tag-small">ACTIVE</span>
+                            </div>
+                        </div>
+                        <button class="btn-track">
+                            Track Satellite
+                            <svg class="icon-white w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="satellite-card">
+                        <div class="card-header">
+                            <div class="satellite-info">
+                                <div class="satellite-icon-bg">
+                                    <svg class="icon-blue-400 satellite-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 10L3 7m0 0l3-3m-3 3h12a8 8 0 010 16H3m0-16v16" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="satellite-card-title">STARLINK-5001</h3>
+                                    <p class="satellite-type">Communication</p>
+                                </div>
+                            </div>
+                            <div class="status-indicator active"></div>
+                        </div>
+                        <div class="card-details-group">
+                            <div class="detail-row-small">
+                                <span class="detail-label">Altitude</span>
+                                <span class="detail-value">550.00 km</span>
+                            </div>
+                            <div class="detail-row-small">
+                                <span class="detail-label">Speed</span>
+                                <span class="detail-value">7.55 km/s</span>
+                            </div>
+                            <div class="detail-row-small">
+                                <span class="detail-label">Status</span>
+                                <span class="status-tag-small">ACTIVE</span>
+                            </div>
+                        </div>
+                        <button class="btn-track">
+                            Track Satellite
+                            <svg class="icon-white w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <footer class="footer">
+            <div class="container footer-content">
+                <div class="footer-grid">
+                    <div class="footer-col">
+                        <div class="logo-group mb-4">
+                            <div class="logo-icon">
+                                <svg class="icon-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-10v4h2v-4h-2zm0-3h2v2h-2v-2z" />
+                                </svg>
+                            </div>
+                            <span class="logo-text">Orbital Tracker</span>
+                        </div>
+                        <p class="footer-text-small">Real-time satellite tracking and collision prediction for LEO satellites.</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4 class="footer-heading">Product</h4>
+                        <ul class="footer-links">
+                            <li>Features</li>
+                            <li>API</li>
+                            <li>Pricing</li>
+                            <li>Documentation</li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4 class="footer-heading">Resources</h4>
+                        <ul class="footer-links">
+                            <li>Blog</li>
+                            <li>Guides</li>
+                            <li>Support</li>
+                            <li>Community</li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4 class="footer-heading">Company</h4>
+                        <ul class="footer-links">
+                            <li>About</li>
+                            <li>Careers</li>
+                            <li>Contact</li>
+                            <li>Privacy</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    &copy; 2025 Orbital Tracker. All rights reserved.
+                </div>
+            </div>
+        </footer>
     </div>
-
-    <script src="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Cesium.js"></script>
-    <script src="assets/js/app.js"></script>
 </body>
 </html>
