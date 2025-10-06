@@ -783,3 +783,31 @@ body {
         display: none;
     }
 }
+/* --- Number of Satellites Input --- */
+.card-num-satellites {
+  margin-top: 20px;
+  padding: 1.5rem;
+}
+
+.input-box {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-slate-700);
+  background-color: var(--color-slate-800);
+  color: var(--color-white);
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+  transition: border-color 150ms ease;
+}
+
+.input-box:focus {
+  outline: none;
+  border-color: var(--color-blue-500);
+}
+
+.status-message {
+  font-size: 0.875rem;
+  color: var(--color-blue-400);
+  margin-top: 0.25rem;
+}
