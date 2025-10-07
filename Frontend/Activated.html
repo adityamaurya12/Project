@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orbital Tracker | Satellite Database</title>
+  <link rel="stylesheet" href="assets\css\style.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="page-header">
+      <h1 class="page-title">🛰️ Satellite Database</h1>
+      <p class="page-subtitle">Browse and track satellites in Low Earth Orbit</p>
+    </header>
+
+    <!-- Filters -->
+    <div class="card card-filters">
+      <div class="filter-group">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input type="text" placeholder="Search satellites by name or NORAD ID..." class="search-input" />
+        </div>
+
+        <select class="filter-select">
+          <option>All Types</option>
+          <option>Communication</option>
+          <option>Weather</option>
+        </select>
+
+        <select class="filter-select">
+          <option>All Status</option>
+          <option>Active</option>
+          <option>Inactive</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Satellites Grid -->
+    <div class="satellites-grid">
+      <!-- Satellite Card 1 -->
+      <div class="satellite-card">
+        <div class="card-header">
+          <div class="satellite-info">
+            <div class="satellite-icon-bg">
+              <svg class="satellite-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M6 10L3 7m0 0l3-3m-3 3h12a8 8 0 010 16H3m0-16v16" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="satellite-card-title">ISS (ZARYA)</h3>
+              <p class="satellite-type">Observatory</p>
+            </div>
+          </div>
+          <div class="status-indicator active"></div>
+        </div>
+
+        <div class="card-details-group">
+          <div class="detail-row-small">
+            <span class="detail-label">Altitude</span>
+            <span class="detail-value">415.00 km</span>
+          </div>
+          <div class="detail-row-small">
+            <span class="detail-label">Speed</span>
+            <span class="detail-value">7.66 km/s</span>
+          </div>
+          <div class="detail-row-small">
+            <span class="detail-label">Status</span>
+            <span class="status-tag-small active">ACTIVE</span>
+          </div>
+        </div>
+
+        <button class="btn-track">Track Satellite →</button>
+      </div>
+
+      <!-- Satellite Card 2 -->
+      <div class="satellite-card">
+        <div class="card-header">
+          <div class="satellite-info">
+            <div class="satellite-icon-bg">
+              <svg class="satellite-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M6 10L3 7m0 0l3-3m-3 3h12a8 8 0 010 16H3m0-16v16" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="satellite-card-title">STARLINK-5001</h3>
+              <p class="satellite-type">Communication</p>
+            </div>
+          </div>
+          <div class="status-indicator active"></div>
+        </div>
+
+        <div class="card-details-group">
+          <div class="detail-row-small">
+            <span class="detail-label">Altitude</span>
+            <span class="detail-value">550.00 km</span>
+          </div>
+          <div class="detail-row-small">
+            <span class="detail-label">Speed</span>
+            <span class="detail-value">7.55 km/s</span>
+          </div>
+          <div class="detail-row-small">
+            <span class="detail-label">Status</span>
+            <span class="status-tag-small active">ACTIVE</span>
+          </div>
+        </div>
+
+        <button class="btn-track">Track Satellite →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="logo-group">
+            <div class="logo-icon">🛰️</div>
+            <span class="logo-text">Orbital Tracker</span>
+          </div>
+          <p class="footer-text-small">
+            Real-time satellite tracking and collision prediction for LEO satellites.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li>Features</li>
+            <li>API</li>
+            <li>Pricing</li>
+            <li>Documentation</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li>Blog</li>
+            <li>Guides</li>
+            <li>Support</li>
+            <li>Community</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li>About</li>
+            <li>Careers</li>
+            <li>Contact</li>
+            <li>Privacy</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">© 2025 Orbital Tracker. All rights reserved.</div>
+    </div>
+  </footer>
+</body>
+</html>
