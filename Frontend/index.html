@@ -1,150 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LEO Satellite Tracker</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LEO Satellite Tracker</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+        /* === EARTH + ORBIT ANIMATION STYLING === */
+        .earth-model {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: auto;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #0077cc, #001a33);
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0, 200, 255, 0.4);
+        }
+
+        .orbit-path {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .satellite-marker {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffcc00;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: orbit 10s linear infinite;
+        }
+
+        @keyframes orbit {
+            from {
+                transform: rotate(0deg) translateX(120px) rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg) translateX(120px) rotate(-360deg);
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="container nav-content">
-      <div class="logo-group">
-        <div class="logo-icon">🛰️</div>
-        <span class="logo-text">LEO Tracker</span>
-      </div>
-      <div class="nav-links">
-        <button class="nav-link active">Track Satellites</button>
-        <button class="nav-link">Collision Alerts</button>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Main Tracker Section -->
-  <main class="tracker-page">
-    <div class="container page-padding tracker-grid">
-
-      <!-- Left Sidebar -->
-      <aside class="left-sidebar">
-        <!-- TLE Input -->
-        <div class="card card-tle">
-          <h3 class="card-title">Upload TLE Data</h3>
-          <div class="tle-dropzone" id="dropZone">
-            <div class="dropzone-icon">
-              <div>📄</div>
+    
+    <nav class="navbar">
+        <div class="container nav-content">
+            <div class="logo-group">
+                <div class="logo-icon">🛰️</div>
+                <span class="logo-text">LEO Tracker</span>
             </div>
-            <p class="dropzone-text">Drag & drop your TLE file here</p>
-            <button class="dropzone-link" id="uploadBtn">Browse File</button>
-            <input type="file" id="tleFile" hidden />
-          </div>
-        </div>
-
-        <!-- NEW: Number of Satellites -->
-        <div class="card card-num-satellites">
-          <h3 class="card-title">Number of Satellites</h3>
-          <form id="numSatForm">
-            <input type="number" id="numSatInput" min="1" max="50" placeholder="Enter number..." class="input-box" required />
-            <button type="submit" class="btn-primary">Set Satellites</button>
-          </form>
-          <p id="numSatStatus" class="status-message"></p>
-        </div>
-
-        <!-- Tracked Satellites -->
-        <div class="card">
-          <h3 class="card-title">Tracked Satellites</h3>
-          <div class="satellite-list" id="satelliteList">
-            <div class="satellite-item">
-              <span class="satellite-name">ISS (ZARYA)</span>
-              <span class="status-tag">Active</span>
+            <div class="nav-links">
+                <button class="nav-link active">Track Satellites</button>
+                <button class="nav-link">Collision Alerts</button>
             </div>
-          </div>
         </div>
-      </aside>
+    </nav>
+    
+    <main class="tracker-page">
+        <div class="container page-padding tracker-grid">
 
-      <!-- 3D Earth View -->
-      <section class="three-d-view">
-        <div class="view-container">
-          <div class="view-content">
-            <div class="earth-model">
-              <div class="earth-inner"></div>
-              <div class="orbit-path">
-                <div class="satellite-marker"></div>
-              </div>
-            </div>
-          </div>
-          <div class="info-bar">
-            <span class="info-time">🕒 12:00 UTC</span>
-            <span class="info-speed">Speed: 7.66 km/s</span>
-            <span class="info-count">Satellites: <span id="satCount">1</span></span>
-          </div>
+            <aside class="left-sidebar">
+                <div class="card card-tle">
+                    <h3 class="card-title">Upload TLE Data</h3>
+                    <div class="tle-dropzone" id="dropZone">
+                        <div class="dropzone-icon"><div>📄</div></div>
+                        <p class="dropzone-text">Drag & drop your TLE file here</p>
+                        <button class="dropzone-link" id="uploadBtn">Browse File</button>
+                        <input type="file" id="tleFile" hidden />
+                    </div>
+                </div>
+
+                <div class="card card-num-satellites">
+                    <h3 class="card-title">Number of Satellites</h3>
+                    <form id="numSatForm">
+                        <input type="number" id="numSatInput" min="1" max="50" placeholder="Enter number..." class="input-box" required />
+                        <button type="submit" class="btn-primary">Set Satellites</button>
+                    </form>
+                    <p id="numSatStatus" class="status-message"></p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Tracked Satellites</h3>
+                    <div class="satellite-list" id="satelliteList">
+                        <div class="satellite-item">
+                            <span class="satellite-name">Loading...</span>
+                            <span class="status-tag">...</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="three-d-view">
+                <div class="view-container">
+                    <div class="view-content">
+                        <div class="earth-model">
+                            <div class="earth-inner"></div>
+                            <div class="orbit-path"></div>
+                        </div>
+                    </div>
+                    <div class="info-bar">
+                        <span class="info-time">🕒 12:00 UTC</span>
+                        <span class="info-speed">Speed: 7.66 km/s</span>
+                        <span class="info-count">Satellites: <span id="satCount">1</span></span>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="right-sidebar">
+                <div class="card-warning">
+                    <div class="warning-header">
+                        <span class="warning-title">⚠️ Collision Alert</span>
+                    </div>
+                    <div class="warning-details">
+                        <p class="warning-tca">Closest Approach: 13:42 UTC</p>
+                        <p class="warning-distance">Distance: 1.2 km</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Satellite Details</h3>
+                    <div class="details-section">
+                        <div class="detail-row">
+                            <span class="detail-label">Name:</span>
+                            <span class="detail-value">ISS (ZARYA)</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Altitude:</span>
+                            <span class="detail-value">408 km</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Velocity:</span>
+                            <span class="detail-value">7.66 km/s</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
         </div>
-      </section>
+    </main>
 
-      <!-- Right Sidebar -->
-      <aside class="right-sidebar">
-        <div class="card-warning">
-          <div class="warning-header">
-            <span class="warning-title">⚠️ Collision Alert</span>
-          </div>
-          <div class="warning-details">
-            <p class="warning-tca">Closest Approach: 13:42 UTC</p>
-            <p class="warning-distance">Distance: 1.2 km</p>
-          </div>
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-bottom">© 2025 LEO Tracker. All rights reserved.</div>
         </div>
+    </footer>
 
-        <div class="card">
-          <h3 class="card-title">Satellite Details</h3>
-          <div class="details-section">
-            <div class="detail-row">
-              <span class="detail-label">Name:</span>
-              <span class="detail-value">ISS (ZARYA)</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">Altitude:</span>
-              <span class="detail-value">408 km</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">Velocity:</span>
-              <span class="detail-value">7.66 km/s</span>
-            </div>
-          </div>
-        </div>
-      </aside>
+    <script>
+    const numSatForm = document.getElementById("numSatForm");
+    const numSatInput = document.getElementById("numSatInput");
+    const numSatStatus = document.getElementById("numSatStatus");
+    const satCount = document.getElementById("satCount");
 
-    </div>
-  </main>
+    numSatForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const numSat = parseInt(numSatInput.value);
+        if (!numSat || numSat <= 0) {
+            numSatStatus.textContent = "⚠️ Please enter a valid number.";
+            return;
+        }
+        numSatStatus.textContent = `✅ You selected ${numSat} satellites to track.`;
+        satCount.textContent = numSat;
+    });
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container footer-content">
-      <div class="footer-bottom">© 2025 LEO Tracker. All rights reserved.</div>
-    </div>
-  </footer>
+    const tleFile = document.getElementById('tleFile');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const dropZone = document.getElementById('dropZone'); 
+    const satelliteList = document.getElementById('satelliteList'); 
 
-  <!-- JS -->
-  <script>
-  // Number of Satellites Input
-  const numSatForm = document.getElementById("numSatForm");
-  const numSatInput = document.getElementById("numSatInput");
-  const numSatStatus = document.getElementById("numSatStatus");
-  const satCount = document.getElementById("satCount");
-
-  numSatForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const numSat = parseInt(numSatInput.value);
-
-    if (!numSat || numSat <= 0) {
-      numSatStatus.textContent = "⚠️ Please enter a valid number.";
-      return;
+    uploadBtn.addEventListener('click', () => tleFile.click());
+    tleFile.addEventListener('change', () => {
+        if (tleFile.files.length > 0) { handleFile(tleFile.files[0]); }
+    });
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+    function preventDefaults (e) { e.preventDefault(); e.stopPropagation(); }
+    dropZone.addEventListener('dragenter', highlight, false);
+    dropZone.addEventListener('dragover', highlight, false);
+    dropZone.addEventListener('dragleave', unhighlight, false);
+    dropZone.addEventListener('drop', handleDrop, false);
+    function highlight() { dropZone.classList.add('highlight'); }
+    function unhighlight() { dropZone.classList.remove('highlight'); }
+    function handleDrop(e) {
+        unhighlight();
+        const dt = e.dataTransfer;
+        if (dt.files.length > 0) { handleFile(dt.files[0]); }
     }
 
-    numSatStatus.textContent = `✅ You selected ${numSat} satellites to track.`;
-    satCount.textContent = numSat;
+    function handleFile(file) {
+        if (file.size > 1024 * 10) { alert("File too large. Max 10KB."); return; }
+        dropZone.querySelector('.dropzone-text').textContent = `Processing: ${file.name}...`;
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const tleData = e.target.result;
+            try {
+                const response = await fetch('/api/track', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tleData: tleData }),
+                });
+                const result = await response.json();
+                if (response.ok && result.status === 'success') {
+                    alert(result.message);
+                    dropZone.querySelector('.dropzone-text').textContent = `✅ ${result.message}`; 
+                    fetchSatelliteData(); 
+                } else {
+                    const errorMessage = result.message || 'Unknown tracking error.';
+                    alert(`Tracking failed: ${errorMessage}`);
+                    dropZone.querySelector('.dropzone-text').textContent = `❌ Tracking failed: ${errorMessage}`;
+                }
+            } catch (error) {
+                alert('A network error occurred while sending TLE data. Is the backend running?');
+                dropZone.querySelector('.dropzone-text').textContent = 'Drag & drop your TLE file here';
+            }
+        };
+        reader.readAsText(file);
+    }
 
-    // Later you can send this to backend
-    // await fetch(`/api/set_satellite_count?count=${numSat}`);
-  });
-  </script>
+    const detailName = document.querySelector('.detail-row:nth-child(1) .detail-value');
+    const detailAltitude = document.querySelector('.detail-row:nth-child(2) .detail-value');
+    const detailVelocity = document.querySelector('.detail-row:nth-child(3) .detail-value');
+    const orbitPath = document.querySelector('.orbit-path');
+
+    async function fetchSatelliteData() {
+        try {
+            const response = await fetch('/api/positions');
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const satellites = await response.json();
+
+            satelliteList.innerHTML = '';
+            if (satellites.length === 0) {
+                satelliteList.innerHTML = '<div class="satellite-item" style="font-style: italic;">No satellites tracked yet. Upload a TLE file!</div>';
+            }
+            satellites.forEach(sat => {
+                const item = document.createElement('div');
+                item.className = 'satellite-item';
+                item.innerHTML = `<span class="satellite-name">${sat.name}</span><span class="status-tag">${sat.status}</span>`;
+                satelliteList.appendChild(item);
+            });
+
+            if (satellites.length > 0) {
+                const firstSat = satellites[0];
+                detailName.textContent = firstSat.name;
+                detailAltitude.textContent = `${firstSat.altitude_km} km`;
+                detailVelocity.textContent = `${firstSat.speed_km_s} km/s`;
+                document.getElementById('satCount').textContent = satellites.length;
+                document.querySelector('.info-time').textContent = `🕒 ${new Date().toLocaleTimeString('en-US', { hour12: false, timeZone: 'UTC' })} UTC`;
+                document.querySelector('.info-speed').textContent = `Speed: ${firstSat.speed_km_s} km/s`;
+                updateOrbitView(satellites);
+            } else {
+                detailName.textContent = 'N/A';
+                detailAltitude.textContent = 'N/A';
+                detailVelocity.textContent = 'N/A';
+                document.getElementById('satCount').textContent = 0;
+                orbitPath.innerHTML = '';
+            }
+
+        } catch (error) {
+            console.error('Failed to fetch satellite data:', error);
+            satelliteList.innerHTML = '<div class="satellite-item" style="color:red; font-weight: bold;">⚠️ Backend connection failed.</div>';
+        }
+    }
+
+    function updateOrbitView(satellites) {
+        orbitPath.innerHTML = '';
+        satellites.forEach((sat, index) => {
+            const marker = document.createElement('div');
+            marker.className = 'satellite-marker';
+            const angle = ((Date.now() / 1000) * sat.speed_km_s * 8 + index * 90) % 360;
+            const x = 50 + 40 * Math.cos(angle * Math.PI / 180);
+            const y = 50 + 40 * Math.sin(angle * Math.PI / 180);
+            marker.style.left = `${x}%`;
+            marker.style.top = `${y}%`;
+            orbitPath.appendChild(marker);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchSatelliteData);
+    setInterval(fetchSatelliteData, 5000);
+    </script>
 </body>
 </html>

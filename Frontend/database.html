@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orbital Tracker | Satellite Database</title>
+  <link rel="stylesheet" href="assets\css\style.css" />
+</head>
+<body>
+  <div class="container">
+        <header class="page-header">
+      <h1 class="page-title">🛰️ Satellite Database</h1>
+      <p class="page-subtitle">Browse and track satellites in Low Earth Orbit</p>
+    </header>
+
+        <div class="card card-filters">
+      <div class="filter-group">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input type="text" placeholder="Search satellites by name or NORAD ID..." class="search-input" />
+        </div>
+
+        <select class="filter-select">
+          <option>All Types</option>
+          <option>Communication</option>
+          <option>Weather</option>
+        </select>
+
+        <select class="filter-select">
+          <option>All Status</option>
+          <option>Active</option>
+          <option>Inactive</option>
+        </select>
+      </div>
+    </div>
+
+        <div class="satellites-grid">
+      <p style="text-align: center; color: #aaa;">Loading satellite data...</p>
+    </div>
+  </div>
+
+    <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="logo-group">
+            <div class="logo-icon">🛰️</div>
+            <span class="logo-text">Orbital Tracker</span>
+          </div>
+          <p class="footer-text-small">
+            Real-time satellite tracking and collision prediction for LEO satellites.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li>Features</li>
+            <li>API</li>
+            <li>Pricing</li>
+            <li>Documentation</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li>Blog</li>
+            <li>Guides</li>
+            <li>Support</li>
+            <li>Community</li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li>About</li>
+            <li>Careers</li>
+            <li>Contact</li>
+            <li>Privacy</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">© 2025 Orbital Tracker. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script>
+    const satellitesGrid = document.querySelector('.satellites-grid');
+
+    function createSatelliteCard(sat) {
+        // Use a default icon path if the type is unknown, otherwise customize logic here
+        const iconPath = "M6 10L3 7m0 0l3-3m-3 3h12a8 8 0 010 16H3m0-16v16"; 
+        
+        const card = document.createElement('div');
+        card.className = 'satellite-card';
+        card.setAttribute('data-norad-id', sat.noradId); // Important for tracking
+        card.innerHTML = `
+            <div class="card-header">
+                <div class="satellite-info">
+                    <div class="satellite-icon-bg">
+                        <svg class="satellite-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="${iconPath}" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="satellite-card-title">${sat.name}</h3>
+                        <p class="satellite-type">${sat.type || 'Unknown'}</p>
+                    </div>
+                </div>
+                <div class="status-indicator active"></div>
+            </div>
+
+            <div class="card-details-group">
+                <div class="detail-row-small">
+                    <span class="detail-label">Altitude</span>
+                    <span class="detail-value">${sat.altitude_km} km</span>
+                </div>
+                <div class="detail-row-small">
+                    <span class="detail-label">Speed</span>
+                    <span class="detail-value">${sat.speed_km_s} km/s</span>
+                </div>
+                <div class="detail-row-small">
+                    <span class="detail-label">Status</span>
+                    <span class="status-tag-small active">${sat.status.toUpperCase()}</span>
+                </div>
+            </div>
+
+            <button class="btn-track" data-norad-id="${sat.noradId}">Track Satellite →</button>
+        `;
+        return card;
+    }
+
+    async function fetchDatabaseData() {
+        try {
+            const response = await fetch('/api/positions');
+            const satellites = await response.json();
+
+            // Clear loading message and hardcoded content
+            satellitesGrid.innerHTML = ''; 
+
+            if (satellites.length === 0) {
+                 satellitesGrid.innerHTML = '<p style="text-align: center; padding: 20px;">No satellites are currently being tracked.</p>';
+                 return;
+            }
+
+            satellites.forEach(sat => {
+                const card = createSatelliteCard(sat);
+                satellitesGrid.appendChild(card);
+            });
+
+            // Add listener for the track buttons (This assumes a tracking page exists)
+            satellitesGrid.querySelectorAll('.btn-track').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const noradId = e.currentTarget.getAttribute('data-norad-id');
+                    // In a real application, this would redirect or activate the tracker page
+                    alert(`Tracking satellite NORAD ID: ${noradId}. Redirecting to tracker...`);
+                    // Example: window.location.href = `/tracker.html?norad=${noradId}`;
+                });
+            });
+
+        } catch (error) {
+            console.error('Failed to fetch satellite database:', error);
+            satellitesGrid.innerHTML = '<p style="text-align: center; color: red; padding: 20px;">Error loading satellites. Check backend server (app.py) connection.</p>';
+        }
+    }
+
+    // Load data when the page is ready
+    document.addEventListener('DOMContentLoaded', fetchDatabaseData);
+    
+    // Optional: Refresh the list every 30 seconds
+    setInterval(fetchDatabaseData, 30000); 
+  </script>
+</body>
+</html>
