@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Interactive LEO Satellite Tracker</title>
+  <link href="https://cesium.com/downloads/cesiumjs/releases/1.122/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  <style>
+    body, html, #cesiumContainer {
+      width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #000;
+    }
+    #controlPanel {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(38, 38, 38, 0.85);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #444;
+        z-index: 10;
+        backdrop-filter: blur(5px);
+        width: 320px;
+    }
+    #controlPanel h2 {
+        margin: 0 0 15px 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #555;
+        font-size: 1.3em;
+        text-align: center;
+    }
+    .control-group {
+        margin-bottom: 15px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 0.9em;
+    }
+    input[type="file"], select, input[type="number"], button {
+        width: 100%;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #666;
+        background: #333;
+        color: white;
+        box-sizing: border-box;
+    }
+    button {
+        background: #007bff;
+        border-color: #007bff;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background 0.2s;
+    }
+    button:hover:not(:disabled) {
+        background: #0056b3;
+    }
+    button:disabled {
+        background: #555;
+        cursor: not-allowed;
+    }
+    #telemetryPanel {
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #555;
+    }
+    .telemetry-label {
+        display: inline-block;
+        width: 90px;
+        color: #aaa;
+    }
+    #telemetryPanel p {
+        margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="cesiumContainer"></div>
+  
+  <div id="controlPanel">
+    <h2>Satellite Tracker</h2>
+    
+    <div class="control-group">
+      <label for="tleFileUpload">1. Upload TLE File (.txt)</label>
+      <input type="file" id="tleFileUpload" accept=".txt">
+    </div>
+    
+    <div class="control-group">
+      <label for="satelliteSelect">2. Select Satellite</label>
+      <select id="satelliteSelect" disabled></select>
+    </div>
+
+    <div id="telemetryPanel">
+      <p><span class="telemetry-label">Latitude:</span> <span id="satLat">--</span>°</p>
+      <p><span class="telemetry-label">Longitude:</span> <span id="satLon">--</span>°</p>
+      <p><span class="telemetry-label">Altitude:</span> <span id="satAlt">--</span> km</p>
+      <p><span class="telemetry-label">Velocity:</span> <span id="satVel">--</span> km/s</p>
+    </div>
+    
+    <div class="control-group">
+      <label for="predictionTime">3. Prediction Duration (minutes)</label>
+      <input type="number" id="predictionTime" value="90" min="1" disabled>
+    </div>
+
+    <button id="predictButton" disabled>Predict Future Path</button>
+  </div>
+
+  <!-- Required Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/satellite.js/5.0.0/satellite.min.js"></script>
+  <script src="https://cesium.com/downloads/cesiumjs/releases/1.122/Build/Cesium/Cesium.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+
